@@ -224,10 +224,9 @@ void setup()
   sei(); // Enable interrupts
 
   dht.begin(); // Start up the DHT
-  lcd.begin(16, 2); // 
-  myStepper.setSpeed(motorSpeed);
-  myServo.attach(9);
-  myServo.write(90);
+  lcd.begin(16, 2); //Start up the LCD Display
+  myStepper.setSpeed(motorSpeed); //Set up the Stepper Motor Speed
+  myServo.attach(9); //Set up the Servo Motor for 
 }
 
 // ---------- Main Loop ----------
@@ -244,47 +243,51 @@ void loop()
     unsigned int sensorValue = adc_read(0); // Read A0
     int threshold = 100;
 
-    if (sensorValue <= threshold) { // ERROR STATE
+    if (sensorValue <= threshold) // ERROR STATE
+    { 
       *port_l |= (1 << 1);  // Turn ON LED on pin 48 (PL1)
       *port_l &= ~(1 << 3); // Turn OFF LED on pin 46 (PL3)
 
       lcd.clear();
-    } else //RUNNING STATE
+    } 
+    else //RUNNING STATE
     {
-      *portB &= ~(1 << 3);
+      *portB &= ~(1 << 3); //Turn OFF LED 4 (pin 50)
       *port_l &= ~(1 << 1); // Turn OFF LED on pin 48 (PL1)
       *port_l |= (1 << 3);  // Turn ON LED on pin 46 (PL3)
       
-
       float temp = dht.readTemperature();
       float hum = dht.readHumidity();
 
-
+      //Printing the initial values
       lcd.setCursor(0, 0);
-lcd.print("Temp: ");
-lcd.print(temp);
-lcd.print(" C   ");
+      lcd.print("Temp: ");
+      lcd.print(temp);
+      lcd.print(" C   ");
 
-lcd.setCursor(0, 1);
-lcd.print("Humid: ");
-lcd.print(hum);
-lcd.print(" %   ");
+      lcd.setCursor(0, 1);
+      lcd.print("Humid: ");
+      lcd.print(hum);
+      lcd.print(" %   ");
+
+      //Applying the millis() function to update the values every minute. 
       unsigned long currentMillis = millis();
-      if (currentMillis - previousMillis >= interval) {
+      if (currentMillis - previousMillis >= interval) 
+      {
         previousMillis = currentMillis; // Reset the timer
 
         float temp = dht.readTemperature();
         float hum = dht.readHumidity();
 
-      lcd.setCursor(0, 0); // Top line
-      lcd.print("Temp: ");
-      lcd.print(temp);
-      lcd.print(" C   "); // Extra spaces to clear old digits
+        lcd.setCursor(0, 0); // Top line
+        lcd.print("Temp: ");
+        lcd.print(temp);
+        lcd.print(" C   "); // Extra spaces to clear old digits
 
-      lcd.setCursor(0, 1); // Bottom line
-      lcd.print("Humid: ");
-      lcd.print(hum);
-      lcd.print(" %   "); // Extra spaces to clear old digits
+        lcd.setCursor(0, 1); // Bottom line
+        lcd.print("Humid: ");
+        lcd.print(hum);
+        lcd.print(" %   "); // Extra spaces to clear old digits
       }
 
       if (!isnan(temp)) 
@@ -296,11 +299,11 @@ lcd.print(" %   ");
           *port_l &= ~(1 << 3); // LED2 OFF
           *port_l &= ~(1 << 1); //LED3 OFF
           *portB |= (1 << 3); //LED4 ON
-          myServo.write(90);       // Move to 90 degrees
-          delay(100);
+          //myServo.write(90);       // Move to 90 degrees
           for (volatile long i = 0; i < 800000; i++);
           //lcd.clear();
 
+          /*
           if (buttonA4Pressed)
           {
             myStepper.step(-400);
@@ -311,9 +314,9 @@ lcd.print(" %   ");
           {
             myStepper.step(400);
             buttonA5Pressed = false;
-          }
+          }*/ //This section is disabled because the stepper motor was not 
         }
-        else
+        else //Go back into IDLE STATE 
         {
           *portB &= ~(1 << 3);
           *port_l &= ~(1 << 1);
@@ -326,7 +329,7 @@ lcd.print(" %   ");
     for (volatile long i = 0; i < 500000; i++); //MAKE SURE TO TAKE THIS OUT AT THE END, THIS CAN COUNT AS A DELAY
                                                 //Which is not allowed on the LAB
   }
-  else
+  else //Back into DISABLED MODE
   {
     *port_l |= (1 << 5);  // LED1 ON
     *port_l &= ~(1 << 3); // LED2 OFF
