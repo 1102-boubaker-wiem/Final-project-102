@@ -6,8 +6,8 @@
 #include <stdbool.h>
 #include <DHT.h>  // Requires Arduino DHT sensor library
 #include <LiquidCrystal.h> //Requires Liquid Crystal
-#include <Stepper.h>
-#include <Servo.h>
+#include <Stepper.h> //REquired for the Stepper Motor
+#include <Servo.h> //Required for the Servo motor
 
 // Used for the temperature sensor (DHT11)
 #define DHTPIN 22     // DHT11 connected to digital pin 22
@@ -122,7 +122,6 @@ volatile unsigned char* ddr_c  = (unsigned char*) 0x27;
 volatile unsigned char* pin_c  = (unsigned char*) 0x26;
 volatile unsigned char* port_c = (unsigned char*) 0x28;
 
-
 // Timer
 volatile unsigned char* myTCCR1A = (unsigned char*) 0x80;
 volatile unsigned char* myTCCR1B = (unsigned char*) 0x81;
@@ -232,10 +231,8 @@ void setup()
 // ---------- Main Loop ----------
 void loop()
 {
-  //lcd.write();
   if (isOn) //IDLE STATE
   {
-    //lcd.clear();
     *port_l &= ~(1 << 5); // LED1 OFF
     *port_l |= (1 << 3);  // LED2 ON
     *portB &= ~(1 << 3); //LED4 OFF
@@ -256,6 +253,7 @@ void loop()
       *port_l &= ~(1 << 1); // Turn OFF LED on pin 48 (PL1)
       *port_l |= (1 << 3);  // Turn ON LED on pin 46 (PL3)
       
+      //REad the temperature and the sensort
       float temp = dht.readTemperature();
       float hum = dht.readHumidity();
 
@@ -320,7 +318,6 @@ void loop()
         {
           *portB &= ~(1 << 3);
           *port_l &= ~(1 << 1);
-          putString("HOLA\\r\\n");
         }
       }
     }
